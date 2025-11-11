@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { Elysia, t } from "elysia";
 
-const users: {
+export const users: {
   id: string;
   fullName: string;
   email: string;
