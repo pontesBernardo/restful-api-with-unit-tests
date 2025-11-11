@@ -1,0 +1,8 @@
+{
+  "schema": "./src/database/schema.ts",
+  "out": "./drizzle",
+  "dialect": "postgresql",
+  "dbCredentials": {
+    "url": "postgres://postgree:1234@localhost:5432/restful-api-db"
+  }
+}
