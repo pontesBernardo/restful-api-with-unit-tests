@@ -1,13 +1,12 @@
 import { t } from "elysia";
-import { users } from "./auth.controller";
+import { userRepository } from "../repositories/user.repository";
 
 export const userController = {
   me: {
     handler: ({ query, set }: any) => {
       const { email } = query;
 
-      const user = users.find((u) => u.email === email);
-
+      const user = userRepository.findByEmail(email);
       if (!user) {
         set.status = 404;
         return { error: "User not found" };

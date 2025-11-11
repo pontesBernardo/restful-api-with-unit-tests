@@ -1,6 +1,6 @@
 import { t } from "elysia";
-
-export const users: any[] = [];
+import { userRepository } from "../repositories/user.repository";
+import { randomUUID } from "node:crypto";
 
 export const authController = {
   register: {
@@ -12,13 +12,18 @@ export const authController = {
         return { error: "Passwords do not match" };
       }
 
-      if (users.find((user) => user.email === email)) {
+      const existingUser = userRepository.findByEmail(email);
+      if (existingUser) {
         set.status = 400;
         return { error: "Email already registered" };
       }
 
-      const newUser = { id: crypto.randomUUID(), fullName, email, password };
-      users.push(newUser);
+      const newUser = userRepository.create({
+        id: randomUUID(),
+        fullName,
+        email,
+        password,
+      });
 
       return {
         message: "User registered successfully!",
@@ -28,7 +33,7 @@ export const authController = {
     body: t.Object({
       fullName: t.String(),
       email: t.String({ format: "email" }),
-      password: t.String({ minLength: 4 }),
+      password: t.String(),
       passwordConfirmation: t.String(),
     }),
   },
@@ -37,17 +42,14 @@ export const authController = {
     handler: ({ body, set }: any) => {
       const { email, password } = body;
 
-      const user = users.find(
-        (u) => u.email === email && u.password === password
-      );
-
-      if (!user) {
+      const user = userRepository.findByEmail(email);
+      if (!user || user.password !== password) {
         set.status = 401;
         return { error: "Invalid credentials" };
       }
 
       return {
-        message: "Login successful",
+        message: "Login successful!",
         data: { email },
       };
     },
